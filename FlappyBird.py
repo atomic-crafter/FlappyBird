@@ -27,19 +27,19 @@ class Base:
 		self.x2 = self.WIDTH
 
 
-		def move(self):
-			self.x1 = self.x1 - self.VEL
-			self.x2 = self.x2 - self.VEL
+	def move(self):
+		self.x1 = self.x1 - self.VEL
+		self.x2 = self.x2 - self.VEL
 
-			if ((self.x1 + self.WIDTH)<0):
-				self.x1 = self.x2 + self.WIDTH
+		if ((self.x1 + self.WIDTH)<0):
+			self.x1 = self.x2 + self.WIDTH
 
-			if ((self.x2 + self.WIDTH)):
-				self.x2 = self.x1 + self.WIDTH
+		if ((self.x2 + self.WIDTH)):
+			self.x2 = self.x1 + self.WIDTH
 
-		def draw(self,screen):
-			win.blit(self.IMG, (self.x1, self.y))
-			win.blit(self.IMG, (self.x2, self.y))
+	def draw(self,screen):
+		screen.blit(self.IMG, (self.x1, self.y))
+		screen.blit(self.IMG, (self.x2, self.y))
 
 
 class Bird:
@@ -61,7 +61,7 @@ class Bird:
 
 
 	def jump(self):
-		self.velocity = -10.5
+		self.velocity = -8.5
 		self.tick_count = 0
 		self.height = self.y
 
@@ -75,12 +75,14 @@ class Bird:
 
 		if (d<= 0):
 			d = d - 2
+		#self.tilt = self.tilt+d
+
 		self.y = self.y + d
 		if (d < 0 or self.y < self.height + 50):
 			if (self.tilt < self.MAX_ROTATION):
 				self.tilt = self.MAX_ROTATION
 		else:
-			if (self.tilt > 90):
+			if (self.tilt >= 0):
 				self.tilt = self.tilt - self.ROT_VEL
 
 
@@ -104,7 +106,8 @@ class Bird:
 			self.img_count = self.ANIMATION_TIME * 2
 
 		rotated_image = pygame.transform.rotate(self.img,self.tilt)
-		new_rect = rotated_image.get_rect(center-self.img.get_rect(topleft = (self.x, self.y)).center)
+
+		new_rect = rotated_image.get_rect(center=self.img.get_rect(topleft = (self.x, self.y)).center)
 		screen.blit(rotated_image, new_rect.topleft)
 
 	def get_mask(self):
@@ -141,7 +144,7 @@ class Pipe:
 
 
 	def draw(self, screen):
-		scren.blit(self.PIPE_TOP, (self.x, self.top))
+		screen.blit(self.PIPE_TOP, (self.x, self.top))
 		screen.blit(self.PIPE_BOTTOM, (self.x, self.bottom))
 
 	def collide(self,bird):
@@ -160,10 +163,14 @@ class Pipe:
 
 			return False
 							
-	def draw_window(screen, bird):
-		screen.blit(BACKGROUND, (0,0))
-		bird.draw(screen)
-		pygame.display.update()
+def draw_window(screen, bird,pipes,base):
+	screen.blit(BACKGROUND, (0,0))
+	bird.draw(screen)
+	for pipe in pipes:
+		pipe.draw(screen)
+	base.draw(screen)
+
+	pygame.display.update()
 
 def main():
 	run = True
@@ -182,7 +189,7 @@ def main():
 				pygame.quit()
 				quit()
 			if event.type == pygame.KEYDOWN:
-				if event.type == pygame.K_SPACE:
+				if event.key == pygame.K_SPACE:
 					bird.jump()
 
 
@@ -215,8 +222,8 @@ def main():
 		for r in rem:
 			pipes.remove(r)
 
-
-		draw_window(screen)
+		base.move()
+		draw_window(screen,bird,pipes,base)
 
 
 if __name__ == "__main__":
