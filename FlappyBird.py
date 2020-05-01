@@ -10,14 +10,16 @@ largeur= 800
 
 BACKGROUND = pygame.transform.scale2x(pygame.image.load("bg.png"))
 
-def draw_window(screen):
+def draw_window(screen, bird):
 	screen.blit(BACKGROUND, (0,0))
+	bird.draw(screen)
 	pygame.display.update()
 
 def main():
 	run = True
 	screen = pygame.display.set_mode((longeur,largeur))
 	clock = pygame.time.Clock()
+	bird = Bird(230, 350)
 
 	while (run):
 		clock.tick(30)
@@ -26,6 +28,7 @@ def main():
 				run = False
 				pygame.quit()
 				quit()
+		bird.move()
 		draw_window(screen)
 
 
@@ -102,5 +105,31 @@ class Bird:
 
 	def get_mask(self):
 		return pygame.mask.from_surface(self.img)
+
+
+	class Base:
+		VEL = 5
+		WIDTH = BASE.get_width()
+		IMG = BASE
+
+		def __init__(self,y):
+			self.y = y
+			self.x1 = 0
+			self.x2 = self.WIDTH
+
+
+		def move(self):
+			self.x1 = self.x1 - self.VEL
+			self.x2 = self.x2 - self.VEL
+
+			if ((self.x1 + self.WIDTH)<0):
+				self.x1 = self.x2 + self.WIDTH
+
+			if ((self.x2 + self.WIDTH)):
+				self.x2 = self.x1 + self.WIDTH
+
+		def draw(self,screen):
+			win.blit(self.IMG, (self.x1, self.y))
+			win.blit(self.IMG, (self.x2, self.y))
 
 
